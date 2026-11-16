@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { menuQuery } from "@/lib/menu-queries";
 import { menuImage } from "@/lib/menu-images";
@@ -64,7 +64,6 @@ function Menu() {
         <div className="flex h-16 w-16 items-center justify-center rounded-full border border-cream-foreground/50 text-cream-foreground">
           <Coffee className="h-8 w-8" strokeWidth={1.25} />
         </div>
-        <Link to="/dashboard" className="absolute right-4 top-4 rounded-full bg-background/70 px-3 py-1.5 text-xs font-medium text-foreground">Yönetim</Link>
       </header>
 
       <CommentBox />
