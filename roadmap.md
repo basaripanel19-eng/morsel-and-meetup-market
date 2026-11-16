@@ -19,3 +19,4 @@ Yayınlama istendi. QR kodu yayın için belirlenen misafir menüsü adresini ku
 - [x] Telefondaki çark simgesi belirgin ve dokunulabilir; yorum düğmesi alt kenarda sabit
 - [x] Yorum düğmesi sağ altta küçük yuvarlak simge
 - [x] Uygulama yönetim paneliyle açılır; misafir menüsü QR kodla açılan ayrı sayfada
+- [ ] Çarkı menüyle aynı görünümde, ayrı sayfa yüklemeden hızlı açma ve telefon kontrolü

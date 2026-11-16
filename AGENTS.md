@@ -37,3 +37,6 @@ use the editor.
 - Uploaded product photos go to the private menu-photos storage bucket and are served only through /api/public/menu-photo/$name with the server admin client (storage has no public read rule); the workspace blocks public buckets, and this keeps menu data small.
 - Guest comments live in guest_comments and are listed only in the management panel; the guest menu server function never returns them (menu_reviews is deprecated).
 - Lucky wheel settings live in wheel_settings and are edited only in the /dashboard Çark tab; public/cark.html has no admin UI and reads /api/public/wheel-config, while /api/public/wheel-spin calls spin_wheel() so prizes and daily limits are decided server-side for every guest.
+<!-- AGENT-MEMORY:BEGIN -->
+- Render the guest wheel inside the menu with shared design components and load its public settings when the menu mounts; avoiding an iframe removes an extra document load and preserves the app's appearance. Keep prize selection on the existing server endpoint.
+<!-- AGENT-MEMORY:END -->

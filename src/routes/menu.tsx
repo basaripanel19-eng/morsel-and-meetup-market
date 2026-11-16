@@ -7,8 +7,7 @@ import { Coffee, FerrisWheel, Heart, Search, SlidersHorizontal } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { ProductSheet } from "@/components/menu/ProductSheet";
 import { CommentBox } from "@/components/menu/CommentBox";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
+import { GuestWheel } from "@/components/menu/GuestWheel";
 
 export const Route = createFileRoute("/menu")({
   head: () => ({
@@ -128,16 +127,7 @@ function Menu() {
           })}
         </div>
       )}
-      <DialogPrimitive.Root open={wheel} onOpenChange={setWheel}>
-        <DialogPrimitive.Portal>
-          <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-overlay backdrop-blur-sm" />
-          <DialogPrimitive.Content aria-describedby={undefined} className="fixed inset-3 z-50 mx-auto max-w-lg overflow-hidden rounded-3xl bg-card shadow-2xl outline-none">
-            <DialogPrimitive.Title className="sr-only">Şans Çarkı</DialogPrimitive.Title>
-            <DialogPrimitive.Close aria-label="Kapat" className="absolute right-3 top-3 z-10 flex size-9 items-center justify-center rounded-full bg-overlay text-foreground backdrop-blur"><X className="size-4" /></DialogPrimitive.Close>
-            <iframe src="/cark.html" title="Şans Çarkı" className="h-full w-full border-0" />
-          </DialogPrimitive.Content>
-        </DialogPrimitive.Portal>
-      </DialogPrimitive.Root>
+      <GuestWheel open={wheel} onOpenChange={setWheel} />
       <ProductSheet
         item={openItem ? { ...openItem, categoryName: data.categories.find((c) => c.id === openItem.category)?.name } : null}
         fav={openId ? favs.includes(openId) : false}
