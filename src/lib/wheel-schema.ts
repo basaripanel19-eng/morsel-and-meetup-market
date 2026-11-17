@@ -15,6 +15,13 @@ export const wheelSchema = z.object({
   prizes: z.array(prizeSchema).min(2).max(16)
     .refine((p) => new Set(p.map((x) => x.t.toLocaleLowerCase("tr"))).size === p.length, "Ödül adları farklı olmalı."),
 });
+/** Public wheel data for guests: daily limits stay on the server. */
+export const guestWheelSchema = z.object({
+  title: z.string(),
+  subtitle: z.string(),
+  max_spins: z.number().int().min(0),
+  prizes: z.array(prizeSchema.omit({ limit: true })),
+});
 export type Prize = z.infer<typeof prizeSchema>;
 export type WheelSettings = z.infer<typeof wheelSchema>;
 export type PrizeMode = "u" | "l" | "z";

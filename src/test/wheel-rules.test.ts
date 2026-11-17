@@ -19,3 +19,9 @@ describe("lucky wheel rules", () => {
     expect(wheelDay(new Date("2026-11-16T21:01:00Z"))).toBe("2026-11-17");
   });
 });
+
+import { guestWheelSchema } from "@/lib/wheel-schema";
+test("guest wheel accepts public settings without daily limits", () => {
+  const ok = guestWheelSchema.safeParse({ title: "Çark", subtitle: "", max_spins: 2, prizes: [{ t: "Kahve", e: "☕", c: "#8d5524", x: false }, { t: "Yok", e: "🙂", c: "#2f9e44", x: true }] });
+  expect(ok.success).toBe(true);
+});

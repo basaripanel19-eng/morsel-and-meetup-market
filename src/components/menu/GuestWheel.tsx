@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, FerrisWheel, LoaderCircle, RotateCw } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
-import { wheelSchema } from "@/lib/wheel-schema";
+import { guestWheelSchema } from "@/lib/wheel-schema";
 
 function today() {
   const d = new Date();
@@ -23,7 +23,7 @@ export function GuestWheel({ open, onOpenChange }: { open: boolean; onOpenChange
     queryFn: async ({ signal }) => {
       const response = await fetch("/api/public/wheel-config", { signal });
       if (!response.ok) throw new Error("Çark yüklenemedi.");
-      return wheelSchema.parse(await response.json());
+      return guestWheelSchema.parse(await response.json());
     },
     staleTime: 30_000,
     retry: 1,
