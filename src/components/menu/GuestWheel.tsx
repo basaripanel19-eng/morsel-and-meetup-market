@@ -16,6 +16,14 @@ function spinCount() {
   } catch { return 0; }
 }
 
+/** Splits a prize name into one or two lines, like the original wheel. */
+function wheelLines(t: string): string[] {
+  const w = t.split(" ");
+  if (w[0] === "Free") return [w[0], w.slice(1).join(" ")].filter(Boolean);
+  if (w.length > 2) return [w[0] + " " + w[1], w.slice(2).join(" ")];
+  return w;
+}
+
 /** Mount with the menu: settings load before the guest taps the wheel. */
 export function GuestWheel({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const config = useQuery({
@@ -86,24 +94,29 @@ export function GuestWheel({ open, onOpenChange }: { open: boolean; onOpenChange
           {settings?.subtitle && <p className="mb-6 text-center text-sm text-muted-foreground">{settings.subtitle}</p>}
           <div className="relative my-auto aspect-square w-full max-w-80 shrink-0">
             {prizes.length > 0 ? <>
-              <svg viewBox="0 0 340 340" role="img" aria-label="Ödül çarkı" className="h-full w-full">
-                <g transform={`rotate(${rotation} 170 170)`}>
+              <svg viewBox="0 0 680 680" role="img" aria-label="Ödül çarkı" className="h-full w-full">
+                <defs><filter id="wheel-text-shadow" x="-20%" y="-50%" width="140%" height="200%"><feDropShadow dx="0" dy="0" stdDeviation="1.5" floodColor="#000" floodOpacity="0.35" /></filter></defs>
+                <g transform={`rotate(${rotation} 340 340)`}>
                   {prizes.map((prize, i) => {
                     const arc = Math.PI * 2 / prizes.length;
                     const a = i * arc, b = a + arc;
-                    const mid = (a + b) / 2;
+                    const lines = wheelLines(prize.t);
+                    const longest = Math.max(...lines.map((l) => l.length));
+                    const size = Math.max(14, Math.min(26, Math.floor(140 / (longest * 0.58))));
                     return <g key={prize.t}>
-                      <path d={`M170 170 L${170 + 164 * Math.cos(a)} ${170 + 164 * Math.sin(a)} A164 164 0 ${arc > Math.PI ? 1 : 0} 1 ${170 + 164 * Math.cos(b)} ${170 + 164 * Math.sin(b)} Z`} fill={prize.c} className="stroke-background" strokeWidth="2" />
-                      <g transform={`translate(${170 + 113 * Math.cos(mid)} ${170 + 113 * Math.sin(mid)}) rotate(${mid * 180 / Math.PI + 90})`}>
-                        <text textAnchor="middle" y="-7" fontSize="23">{prize.e}</text>
-                        <text textAnchor="middle" y="14" fontSize="11" fontWeight="700" textLength={prize.t.length > 12 ? 76 : undefined} lengthAdjust="spacingAndGlyphs" className="fill-background stroke-foreground" paintOrder="stroke" strokeWidth="0.5">{prize.t}</text>
+                      <path d={`M340 340 L${340 + 332 * Math.cos(a)} ${340 + 332 * Math.sin(a)} A332 332 0 ${arc > Math.PI ? 1 : 0} 1 ${340 + 332 * Math.cos(b)} ${340 + 332 * Math.sin(b)} Z`} fill={prize.c} stroke="#fff" strokeWidth="4" />
+                      <g transform={`translate(340 340) rotate(${(a + arc / 2) * 180 / Math.PI})`}>
+                        <text x="292" y="3" fontSize="46" textAnchor="middle" dominantBaseline="middle" transform="rotate(90 292 3)">{prize.e}</text>
+                        <g filter="url(#wheel-text-shadow)" fill="#fff" fontWeight="700" fontSize={size} textAnchor="end" dominantBaseline="middle" fontFamily="system-ui, sans-serif">
+                          {lines.map((line, n) => <text key={n} x="246" y={lines.length > 1 ? (n === 0 ? -15 : 15) : 0}>{line}</text>)}
+                        </g>
                       </g>
                     </g>;
                   })}
                 </g>
-                <circle cx="170" cy="170" r="18" className="fill-background stroke-primary" strokeWidth="3" />
-                <path d="M158 3 H182 L170 27 Z" className="fill-primary stroke-background" strokeWidth="2" />
+                <circle cx="340" cy="340" r="34" fill="#fff" stroke="#d9480f" strokeWidth="6" />
               </svg>
+              <div aria-hidden className="absolute -top-3 left-1/2 h-0 w-0 -translate-x-1/2 border-x-[15px] border-t-[32px] border-x-transparent border-t-[#d9480f] drop-shadow" />
             </> : <div className="flex h-full items-center justify-center rounded-full bg-secondary text-muted-foreground">
               {config.isError ? <FerrisWheel className="size-16" /> : <LoaderCircle aria-label="Çark yükleniyor" className="size-10 animate-spin motion-reduce:animate-none" />}
             </div>}
