@@ -86,14 +86,17 @@ export function GuestWheel({ open, onOpenChange }: { open: boolean; onOpenChange
     <Dialog.Portal>
       <Dialog.Overlay className="fixed inset-0 z-50 bg-overlay" />
       <Dialog.Content aria-describedby={undefined} className="fixed inset-0 z-50 mx-auto flex max-w-lg flex-col overflow-y-auto bg-background text-foreground outline-none">
-        <header className="flex min-h-16 shrink-0 items-center gap-3 border-b border-border px-4 py-3">
+        <div className="flex shrink-0 items-center px-4 pt-3">
           <Dialog.Close asChild><Button variant="ghost" size="icon" aria-label="Menüye dön" title="Menüye dön"><ArrowLeft className="size-5" /></Button></Dialog.Close>
-          <Dialog.Title className="min-w-0 break-words text-lg font-semibold">{settings?.title || "Şans Çarkı"}</Dialog.Title>
+        </div>
+        <header className="px-4 pb-2 text-center">
+          <Dialog.Title className="break-words text-3xl font-bold">{settings?.title || "🎡"}</Dialog.Title>
+          <p className="mt-1.5 text-muted-foreground">{config.isError ? "Could not load the wheel." : settings?.subtitle}</p>
         </header>
-        <div className="flex flex-1 flex-col items-center px-5 py-6">
-          {settings?.subtitle && <p className="mb-6 text-center text-sm text-muted-foreground">{settings.subtitle}</p>}
-          <div className="relative my-auto aspect-square w-full max-w-80 shrink-0">
-            {prizes.length > 0 ? <>
+        <div className="px-4 pb-10 pt-3">
+          <section className="rounded-[20px] border border-border bg-card p-5">
+            <div className="relative mx-auto my-2 aspect-square w-[min(88vw,340px)]">
+              {prizes.length > 0 ? <>
               <svg viewBox="0 0 680 680" role="img" aria-label="Ödül çarkı" className="h-full w-full">
                 <defs><filter id="wheel-text-shadow" x="-20%" y="-50%" width="140%" height="200%"><feDropShadow dx="0" dy="0" stdDeviation="1.5" floodColor="#000" floodOpacity="0.35" /></filter></defs>
                 <g transform={`rotate(${rotation} 340 340)`}>
@@ -117,20 +120,25 @@ export function GuestWheel({ open, onOpenChange }: { open: boolean; onOpenChange
                 <circle cx="340" cy="340" r="34" fill="#fff" stroke="#d9480f" strokeWidth="6" />
               </svg>
               <div aria-hidden className="absolute -top-3 left-1/2 h-0 w-0 -translate-x-1/2 border-x-[15px] border-t-[32px] border-x-transparent border-t-[#d9480f] drop-shadow" />
-            </> : <div className="flex h-full items-center justify-center rounded-full bg-secondary text-muted-foreground">
-              {config.isError ? <FerrisWheel className="size-16" /> : <LoaderCircle aria-label="Çark yükleniyor" className="size-10 animate-spin motion-reduce:animate-none" />}
-            </div>}
-          </div>
-          <div className="mt-6 w-full max-w-80 space-y-4 pb-4 text-center">
-            {result && <div role="status" className="space-y-1"><p className="text-4xl">{result.e}</p><p className="text-sm text-muted-foreground">{result.x ? "Bu kez olmadı" : "Tebrikler! Kazandınız:"}</p><p className="break-words text-xl font-semibold">{result.x ? "Bir dahaki sefere bol şans!" : result.t}</p></div>}
-            {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-            {config.isError ? <><p role="alert" className="text-sm text-muted-foreground">Çark yüklenemedi.</p><Button variant="secondary" className="w-full" onClick={() => void config.refetch()}><RotateCw className="size-4" />Tekrar dene</Button></> : <Button className="h-12 w-full gap-2" disabled={!settings || busy || full} onClick={() => void spin()}>
-              {busy ? <LoaderCircle className="size-4 animate-spin motion-reduce:animate-none" /> : <FerrisWheel className="size-5" />}
-              {busy ? "Çevriliyor…" : full ? "Bugünkü hakkınız doldu" : !settings ? "Yükleniyor…" : "Çarkı çevir"}
-            </Button>}
-            {settings && settings.max_spins > 0 && <p className="text-xs text-muted-foreground">{full ? "Yarın tekrar bekleriz." : `${Math.max(0, settings.max_spins - count)} hakkınız kaldı`}</p>}
-          </div>
+              </> : <div className="flex h-full items-center justify-center rounded-full bg-secondary text-muted-foreground">
+                {config.isError ? <FerrisWheel className="size-16" /> : <LoaderCircle aria-label="Çark yükleniyor" className="size-10 animate-spin motion-reduce:animate-none" />}
+              </div>}
+            </div>
+            {config.isError
+              ? <Button variant="secondary" className="mx-auto mt-3.5 flex h-auto w-full max-w-[340px] rounded-full py-3.5" onClick={() => void config.refetch()}><RotateCw className="size-4" />Try again</Button>
+              : <Button className="mx-auto mt-3.5 flex h-auto w-full max-w-[340px] rounded-full py-3.5 text-lg font-bold" disabled={!settings || busy || full} onClick={() => void spin()}>
+                  {!settings || busy ? "…" : full ? "Out of spins, come back tomorrow" : settings.max_spins > 0 ? `SPIN! (${Math.max(0, settings.max_spins - count)} left)` : "SPIN!"}
+                </Button>}
+          </section>
         </div>
+        {(result || error) && <div className="fixed inset-0 z-10 flex items-center justify-center bg-overlay p-5" onClick={() => { setWinner(null); setError(""); }}>
+          <div role="status" className="w-full max-w-[360px] animate-in zoom-in-75 rounded-3xl bg-card px-5 py-6 text-center" onClick={(e) => e.stopPropagation()}>
+            <p className="text-7xl leading-tight">{error ? "⚠️" : result?.e}</p>
+            {!error && <p>{result?.x ? "Not this time" : "Congratulations! You won:"}</p>}
+            <p className="my-1.5 break-words text-2xl font-extrabold">{error ? "Please try again." : result?.x ? "Better luck next time!" : result?.t}</p>
+            <button type="button" className="mt-2.5 w-full text-muted-foreground" onClick={() => { setWinner(null); setError(""); }}>Close</button>
+          </div>
+        </div>}
       </Dialog.Content>
     </Dialog.Portal>
   </Dialog.Root>;
